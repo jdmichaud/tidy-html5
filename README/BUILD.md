@@ -8,7 +8,9 @@
   
   3. appropriate build tools for the platform
   
-  4. the [xsltproc][3] tool is required to build and install the `tidy.1` man page on Unix-like platforms.
+  4. optionally the [xsltproc][3] tool, which lets the build generate the `tidy.1` man page from
+     Tidy's own help output on Unix-like platforms. Without it the pre-generated `man/tidy.1`
+     is installed instead, so a man page is installed either way.
   
 CMake comes in two forms - command line and GUI. Some installations only install one or the other, but sometimes both. The build commands below are only for command line use.
 

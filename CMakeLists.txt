@@ -509,13 +509,15 @@ endif ()
 #################################################
 
 if (UNIX AND SUPPORT_CONSOLE_APP)
+    ## NOTE: man name must match exe ie currently `${LIB_NAME}.1` not `tidy.1`
+    ## also could use `manpath` command output to determine target install path
+    set(TIDY_MANFILE ${LIB_NAME}.1)
     find_program( XSLTPROC_FOUND xsltproc )
     if (XSLTPROC_FOUND)
-        ## NOTE: man name must match exe ie currently `${LIB_NAME}.1` not `tidy.1`
-        ## also could use `manpath` command output to determine target install path
-        set(TIDY_MANFILE ${LIB_NAME}.1)
         message(STATUS "*** Generating man ${TIDY_MANFILE} custom commands...")
         set(TIDY1XSL ${CMAKE_CURRENT_BINARY_DIR}/tidy1.xsl)
+        ## The date the man page carries is the release date in version.txt.
+        set(TIDY_MAN_DATE "${tidy_YEAR}-${tidy_MONTH}-${tidy_DAY}")
         set(TIDYHELP ${CMAKE_CURRENT_BINARY_DIR}/tidy-help.xml)
         set(TIDYCONFIG ${CMAKE_CURRENT_BINARY_DIR}/tidy-config.xml)
         add_custom_target(man ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${LIB_NAME}")
@@ -554,8 +556,16 @@ if (UNIX AND SUPPORT_CONSOLE_APP)
         install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${TIDY_MANFILE} DESTINATION ${MAN_INSTALL_DIR})
 
     else ()
+        ## Without xsltproc the man page cannot be generated from this build's
+        ## own help output, so install the copy shipped in man/ instead. It is
+        ## generated the same way, and only goes as far out of date as the
+        ## release it was generated from.
         message(STATUS "*** NOTE: xsltproc NOT FOUND! Can NOT generate man page.")
-        message(STATUS "*** You need to install xsltproc in your system.")
+        message(STATUS "*** Installing the ${TIDY_MANFILE} shipped in man/ instead.")
+        message(STATUS "*** Install xsltproc to have it generated from this build.")
+        install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/man/tidy.1
+                DESTINATION ${MAN_INSTALL_DIR}
+                RENAME ${TIDY_MANFILE})
     endif ()
 endif ()
 

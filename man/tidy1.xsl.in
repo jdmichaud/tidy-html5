@@ -41,7 +41,9 @@
 
 <xsl:template name="header-section">
   <xsl:text/>.\" tidy man page for the HTML Tidy
-.TH TIDY 1 "<xsl:value-of select="cmdline/@version" />" "HTML Tidy" "<xsl:value-of select="cmdline/@version" />"
+.\" Generated from the output of `tidy -xml-help` and `tidy -xml-config`;
+.\" see man/README.md. Edit man/tidy1.xsl.in rather than this file.
+.TH TIDY 1 "@TIDY_MAN_DATE@" "HTML Tidy <xsl:value-of select="cmdline/@version" />" "HTML Tidy Manual"
 </xsl:template>
 
 <xsl:template name="cmdline-section">
@@ -59,14 +61,28 @@ For HTML variants, it detects, reports, and corrects many common coding errors
 and strives to produce visually equivalent markup that is both conformant
 to the HTML specifications and that works in most browsers.
 .LP
-A common use of Tidy is to convert plain HTML to XHTML.  
+A common use of Tidy is to convert plain HTML to XHTML.
 For generic XML files, Tidy is limited to correcting basic well-formedness
 errors and pretty printing.
 .LP
-If no input file is specified, Tidy reads the standard input.  
+If no input file is specified, Tidy reads the standard input.
 If no output file is specified, Tidy writes the tidied markup to the
 standard output.  If no error file is specified, Tidy writes messages
 to the standard error.
+.LP
+Each input file is read, repaired, and written out in turn, so several files
+can be given at once.  With \fB\-modify\fR Tidy writes each file back over
+itself rather than to the standard output, which is how a whole tree of
+documents is usually tidied.
+.LP
+Tidy changes markup, not content: it aims to leave a document looking the
+same in a browser once it is done.  Problems it cannot fix on its own are
+reported rather than guessed at, and a document that Tidy considers to be in
+error is not written out at all unless \fB\-\-force\-output yes\fR asks for
+it, so that a failed run cannot quietly replace a good file with a worse one.
+.LP
+The same work is available to programs as a library, \fBlibtidy\fR, which is
+what this command is built on.
 .SH OPTIONS
 Tidy supports two different kinds of options.  
 Purely \fIcommand-line\fR options, starting with a single dash '\fB-\fR',
@@ -162,7 +178,7 @@ They are listed alphabetically within each category.<xsl:text/>
 .TP
 .B HTML_TIDY
 Name of the default configuration file.  This should be an absolute path,
-since you will probably invoke \fBtidy\fR from different directories.  
+since you will probably invoke \fBtidy\fR from different directories.
 The value of HTML_TIDY will be parsed after the compiled-in default
 (defined with -DTIDY_CONFIG_FILE), but before any of the files specified
 using \fB-config\fR.
@@ -187,6 +203,68 @@ All input files were processed successfully.
 There were warnings.
 .IP 2
 There were errors.
+.LP
+A run that ends in errors writes no tidied output unless
+\fB\-\-force\-output yes\fR is given, so the exit status is worth testing
+before a script goes on to use the result.
+<xsl:if test="$ENABLE_CONFIG_FILES = 'ON'">
+.SH FILES
+.TP
+.I <xsl:value-of select="$TIDY_CONFIG_FILE" />
+System wide configuration file, read first if it exists.
+.TP
+.I <xsl:value-of select="$TIDY_USER_CONFIG_FILE" />
+Per user configuration file, read after the system one, and skipped
+altogether when \fBHTML_TIDY\fR is set.
+.LP
+Options read from these files are overridden by any given later, whether by
+\fB\-config\fR or on the command line, so a configuration file sets the
+defaults for a machine or a user and the command line settles the rest.
+</xsl:if>
+.SH EXAMPLES
+Report on a file without changing anything, the tidied markup going to the
+standard output and the diagnostics to the standard error:
+.LP
+.in 1i
+\fBtidy\fR index.html
+.LP
+Repair a file in place, keeping quiet about anything that is not a warning
+or an error:
+.LP
+.in 1i
+\fBtidy \-m \-q\fR index.html
+.LP
+Pretty print into a new file, two spaces to a level and lines kept under
+100 columns:
+.LP
+.in 1i
+\fBtidy \-indent \-\-indent\-spaces 2 \-\-wrap 100 \-o\fR clean.html messy.html
+.LP
+Tidy a whole directory in place, with the settings kept in a
+configuration file:
+.LP
+.in 1i
+\fBtidy \-config\fR ~/tidy.conf \fB\-m\fR *.html
+.LP
+Check a file and say nothing about markup that is merely tidy, collecting
+the complaints in a file of their own:
+.LP
+.in 1i
+\fBtidy \-e \-f\fR errors.txt index.html
+.LP
+Read from a pipe and write to one, which is how Tidy fits into a filter
+chain:
+.LP
+.in 1i
+curl \-s https://example.com/ | \fBtidy \-asxhtml \-q\fR &gt; page.xhtml
+.LP
+Ask what an option does, or what every option is currently set to:
+.LP
+.in 1i
+\fBtidy \-help\-option\fR wrap
+.br
+\fBtidy \-show\-config\fR
+.in
 </xsl:template>
 
 <xsl:template name="show-cmdline-options">

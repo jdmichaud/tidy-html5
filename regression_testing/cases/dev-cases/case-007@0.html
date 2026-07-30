@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>format-css</title>
+<style>
+/* a comment
+ * over several
+ * lines
+ */
+@import url(reset.css);
+
+h1,h2,h3{margin:0;padding:0}
+a:hover,a:focus{color:red}
+ul>li+li~span{color:blue}
+[data-x="a,b"]{content:"}{;"}
+
+/* the space in front of a pseudo class is a descendant combinator, so these
+   two selectors must stay as different as they are */
+a :hover, .card :first-child { color: #123 }
+a:hover, .card:first-child { color: #456 }
+li :nth-child( 2n + 1 ) > * { color: #789 }
+.desc .child   .grand { color: #abc }
+
+.strays { color: red;; }
+
+@media screen and (min-width: 600px) {
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(12rem,1fr));gap:1rem}
+.grid > .cell::after { content: '\2014'; }
+}
+
+.box{
+  transition:opacity .2s ease,transform .2s ease;
+  font-family:Arial,sans-serif;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'></svg>") no-repeat;
+  background-image:url(images/a.png);
+  width:calc(100% - 2rem);
+  margin:0 auto;   /* stays on this line */
+  --custom-thing: { a: b };
+  color:red!important;
+}
+</style>
+<style>
+/* not touched: the braces of this one do not balance */
+a { color: red
+</style>
+<style>
+<!--
+p { text-align: justify }
+-->
+</style>
+<style>
+/* not touched: a string carried over a newline is not ours to move about */
+.a { content: "one \
+two"; color: red }
+</style>
+</head>
+<body>
+<p>format-css</p>
+</body>
+</html>

@@ -202,6 +202,7 @@ static const TidyOptionImpl option_defs[] =
     { TidyFixComments,             MR, "fix-bad-comments",            IN, TidyAutoState,   ParsePickList,     &autoBoolPicks      },
     { TidyFixUri,                  MR, "fix-uri",                     BL, yes,             ParsePickList,     &boolPicks          },
     { TidyForceOutput,             DG, "force-output",                BL, no,              ParsePickList,     &boolPicks          },
+    { TidyFormatCSS,               PP, "format-css",                  BL, yes,             ParsePickList,     &boolPicks          },
     { TidyGDocClean,               MC, "gdoc",                        BL, no,              ParsePickList,     &boolPicks          },
     { TidyHideComments,            MX, "hide-comments",               BL, no,              ParsePickList,     &boolPicks          },
     { TidyHtmlOut,                 DT, "output-html",                 BL, no,              ParsePickList,     &boolPicks          },

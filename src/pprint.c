@@ -17,6 +17,7 @@
 #include "tmbstr.h"
 #include "utf8.h"
 #include "sprtf.h"
+#include "css.h"
 
 
 /****************************************************************************//*
@@ -2116,6 +2117,78 @@ static void PPrintSection( TidyDocImpl* doc, uint indent, Node *node )
 
 
 /**
+ *  Pretty prints the style sheet held by a style element, and indicates
+ *  whether it did: a style sheet Tidy cannot make complete sense of is left
+ *  to the caller to print as it was found.
+ *
+ *  The formatter hands back lines that already carry their own indentation,
+ *  so wrapping is turned off while they are written out; the last line is
+ *  ended here, which leaves the closing tag on a line of its own.
+ */
+static Bool PPrintCSS( TidyDocImpl* doc, uint mode, uint indent, Node *node )
+{
+    TidyPrintImpl* pprint = &doc->pprint;
+    Node* content = node->content;
+    TidyBuffer css;
+    Bool formatted;
+    uint ix, saveWrap, lineIndent;
+
+    if ( content == NULL || content->next != NULL ||
+         !TY_(nodeIsText)(content) || content->end <= content->start )
+        return no;
+
+    tidyBufInitWithAllocator( &css, doc->allocator );
+
+    formatted = TY_(FormatCSS)( doc,
+                                (ctmbstr)(doc->lexer->lexbuf + content->start),
+                                content->end - content->start,
+                                indent, &css );
+    if ( formatted )
+    {
+        uint size = css.size;
+
+        /* pad the text so that decoding the last character of it can never
+           read beyond the end of the buffer */
+        tidyBufAppend( &css, "\0\0\0\0\0\0\0\0", 8 );
+
+        saveWrap = WrapOff( doc );
+        ix = lineIndent = 0;
+
+        while ( ix < size && css.bp[ix] == ' ' )
+            ++ix, ++lineIndent;
+        pprint->indent[ 0 ].spaces = (int) lineIndent;
+
+        while ( ix < size )
+        {
+            uint c = css.bp[ix];
+
+            if ( c == '\n' )
+            {
+                lineIndent = 0;
+                for ( ++ix; ix < size && css.bp[ix] == ' '; ++ix )
+                    ++lineIndent;
+                TY_(PFlushLine)( doc, lineIndent );
+                continue;
+            }
+
+            /* look for UTF-8 multibyte character */
+            if ( c > 0x7F )
+                ix += TY_(GetUTF8)( (ctmbstr)(css.bp + ix), &c );
+            ++ix;
+
+            PPrintChar( doc, c, mode );
+        }
+
+        TY_(PFlushLine)( doc, indent );
+        WrapOn( doc, saveWrap );
+    }
+
+    tidyBufFree( &css );
+    return formatted;
+}
+
+
+/**
  *  @todo
  */
 static void PPrintScriptStyle( TidyDocImpl* doc, uint mode, uint indent, Node *node )
@@ -2176,7 +2249,13 @@ static void PPrintScriptStyle( TidyDocImpl* doc, uint mode, uint indent, Node *n
         }
     }
 
-    for ( content = node->content;
+    if ( nodeIsSTYLE(node) && cfgBool(doc, TidyFormatCSS) &&
+         PPrintCSS( doc, (mode | PREFORMATTED | NOWRAP | CDATA), indent, node ) )
+    {
+        /* the last line of the style sheet has been ended already */
+        contentIndent = 0;
+    }
+    else for ( content = node->content;
           content != NULL;
           content = content->next )
     {

@@ -356,7 +356,7 @@ set ( CFILES
         ${SRCDIR}/fileio.c       ${SRCDIR}/streamio.c     ${SRCDIR}/tagask.c
         ${SRCDIR}/tmbstr.c       ${SRCDIR}/utf8.c         ${SRCDIR}/tidylib.c
         ${SRCDIR}/mappedio.c     ${SRCDIR}/gdoc.c         ${SRCDIR}/language.c
-        ${SRCDIR}/messageobj.c   ${SRCDIR}/sprtf.c )
+        ${SRCDIR}/messageobj.c   ${SRCDIR}/sprtf.c       ${SRCDIR}/css.c )
         
 set ( HFILES
         ${INCDIR}/tidyplatform.h ${INCDIR}/tidy.h         ${INCDIR}/tidyenum.h
@@ -374,7 +374,7 @@ set ( LIBHFILES
         ${SRCDIR}/pprint.h       ${SRCDIR}/streamio.h     ${SRCDIR}/tags.h
         ${SRCDIR}/tmbstr.h       ${SRCDIR}/utf8.h         ${SRCDIR}/tidy-int.h
         ${SRCDIR}/version.h      ${SRCDIR}/gdoc.h         ${SRCDIR}/language.h
-        ${SRCDIR}/language_en.h  ${SRCDIR}/sprtf.h )
+        ${SRCDIR}/language_en.h  ${SRCDIR}/sprtf.h       ${SRCDIR}/css.h )
   
 
 #------------------------------------------------------------------------

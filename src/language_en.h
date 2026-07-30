@@ -533,6 +533,33 @@ static languageDefinition language_en = { whichPluralForm_en, {
       - It's very important that <br/> be self-closing!
       - The strings "Tidy" and "HTML Tidy" are the program name and must not
       be translated. */
+        TidyFormatCSS,                0,
+        "This option specifies if Tidy should pretty print the style sheet inside "
+        "a <code>&lt;style&gt;</code> element, indenting its rules and giving each "
+        "declaration a line of its own. "
+        "<br/>"
+        "The indentation follows <code>indent-spaces</code>, and long values are "
+        "broken at the <code>wrap</code> margin. A value made of several comma "
+        "separated items, such as a font stack or a list of transitions, is given "
+        "a line per item when any of those items is made of more than one word. "
+        "<br/>"
+        "Only whitespace is rewritten, so the meaning of the style sheet is never "
+        "altered, and Tidy leaves the style sheet exactly as it found it whenever "
+        "it cannot make complete sense of it, for example when braces are "
+        "unbalanced or when the style sheet is wrapped in legacy "
+        "<code>&lt;!--</code> comment hiding. "
+        "<br/>"
+        "Set this option to <var>no</var> to have the content of "
+        "<code>&lt;style&gt;</code> elements passed through unchanged."
+    },
+    {/* Important notes for translators:
+      - Use only <code></code>, <var></var>, <em></em>, <strong></strong>, and
+      <br/>.
+      - Entities, tags, attributes, etc., should be enclosed in <code></code>.
+      - Option values should be enclosed in <var></var>.
+      - It's very important that <br/> be self-closing!
+      - The strings "Tidy" and "HTML Tidy" are the program name and must not
+      be translated. */
         TidyGDocClean,                0,
         "This option specifies if Tidy should enable specific behavior for "
         "cleaning up HTML exported from Google Docs. "

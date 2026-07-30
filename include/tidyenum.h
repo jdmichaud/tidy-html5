@@ -595,6 +595,7 @@ typedef enum
     TidyFixComments,             /**< Fix comments with adjacent hyphens */
     TidyFixUri,                  /**< Applies URI encoding if necessary */
     TidyForceOutput,             /**< Output document even if errors were found */
+    TidyFormatCSS,               /**< Pretty print the content of style elements */
     TidyGDocClean,               /**< Clean up HTML exported from Google Docs */
     TidyHideComments,            /**< Hides all (real) comments in output */
     TidyHtmlOut,                 /**< Output plain HTML, even for XHTML input.*/
